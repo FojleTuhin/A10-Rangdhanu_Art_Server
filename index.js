@@ -35,7 +35,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res)=>{
-    res.send('Hello from my first ever server');
+    res.send('Hello from Rangdhanu');
 })
 
 
