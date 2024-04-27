@@ -26,24 +26,54 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const itemCollection= client.db('Rangdhanu').collection('art');
+    const itemCollection = client.db('Rangdhanu').collection('art');
 
-    app.get('/item', async(req, res)=>{
+    app.get('/item', async (req, res) => {
       const cursor = itemCollection.find();
-      const result =await cursor.toArray();
+      const result = await cursor.toArray();
       res.send(result);
     })
 
-    app.post('/item', async(req, res)=>{
-      const newItem= req.body;
+    app.get('/item/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await itemCollection.findOne(query);
+      res.send(result)
+    })
+
+    app.post('/item', async (req, res) => {
+      const newItem = req.body;
       console.log(newItem);
       const result = await itemCollection.insertOne(newItem);
       res.send(result)
     })
 
-    app.delete('/item/:id', async(req, res)=>{
+    app.put('/item/:id', async (req, res) => {
       const id = req.params.id;
-      const query={_id: new ObjectId(id)}
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updateCraft= req.body;
+      const Craft = {
+        $set: {
+          itemName: updateCraft.itemName,
+          subcategory: updateCraft.subcategory,
+          image: updateCraft.image,
+          price: updateCraft.price,
+          rating: updateCraft.rating,
+          customization: updateCraft.customization,
+          processing_time: updateCraft.processing_time,
+          stockStatus: pdateCraft.stockStatus,
+          description: updateCraft.description,
+        }
+      }
+
+      const result = await itemCollection.updateOne(filter, Craft, options);
+      res.send(result);
+    })
+
+    app.delete('/item/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
       const result = await itemCollection.deleteOne(query);
       res.send(result)
     })
@@ -61,12 +91,12 @@ async function run() {
 run().catch(console.dir);
 
 
-app.get('/', (req, res)=>{
-    res.send('Hello from Rangdhanu Art');
-}) 
+app.get('/', (req, res) => {
+  res.send('Hello from Rangdhanu Art');
+})
 
 
-app.listen(port, ()=>{
-    console.log(`My first server is running on port:${port}`);
+app.listen(port, () => {
+  console.log(`My first server is running on port:${port}`);
 })
 
