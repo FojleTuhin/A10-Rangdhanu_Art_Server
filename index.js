@@ -62,7 +62,7 @@ async function run() {
           rating: updateCraft.rating,
           customization: updateCraft.customization,
           processing_time: updateCraft.processing_time,
-          stockStatus: pdateCraft.stockStatus,
+          stockStatus: updateCraft.stockStatus,
           description: updateCraft.description,
         }
       }
@@ -84,8 +84,7 @@ async function run() {
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
+    
   }
 }
 run().catch(console.dir);
