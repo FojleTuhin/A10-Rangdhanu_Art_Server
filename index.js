@@ -5,8 +5,12 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port = process.env.port || 5000;
 
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
+
+app.use(cors({
+  origin:["http://localhost:5173","http://localhost:5174", "https://rangdhanu-art.netlify.app"]
+}));
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.z7hla77.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -27,6 +31,7 @@ async function run() {
     // await client.connect();
 
     const itemCollection = client.db('Rangdhanu').collection('art');
+    const categoriesCollection = client.db('Rangdhanu').collection('categories');
 
     app.get('/item', async (req, res) => {
       const cursor = itemCollection.find();
@@ -41,12 +46,19 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/categories', async (req, res) => {
+      const cursor = categoriesCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
     app.post('/item', async (req, res) => {
       const newItem = req.body;
       console.log(newItem);
       const result = await itemCollection.insertOne(newItem);
       res.send(result)
     })
+   
 
     app.put('/item/:id', async (req, res) => {
       const id = req.params.id;
